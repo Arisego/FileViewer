@@ -42,7 +42,10 @@ TSharedRef<SWidget> UDirTree::RebuildWidget()
 void UDirTree::DirTreeDbClick(const FString& InPath)
 {
 	UE_LOG(LogFileViewer, Log, TEXT("[UDirTree] DirTreeDbClick(): %s||%s"), *MyFileView->mstr_CurPath,*InPath);
-	UGameplayStatics::OpenLevel(this, *InPath);
+	if (FPaths::GetExtension(InPath).Equals(TEXT("umap")))
+	{
+		UGameplayStatics::OpenLevel(this, *InPath);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
