@@ -3,7 +3,7 @@ File view plugin for listing ue4 loaded file assets.
 
 You can use this plugin to debug pak file mount result while in shipping mode.
 
-This plugin now targets 4.15, it should work for other version of engine with some minor modify, if you have any ploblem with install the plugin, just send a issue so that I may give you some help.
+This plugin now targets 4.15, it should work for other version of engine with some minor modify, if you have any ploblem with installing the plugin, just send a issue so that I may give you some help.
 # Usage
 You may want to use this as a project plugin.
 
