@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class FileViewer : ModuleRules
 {
-	public FileViewer(TargetInfo Target)
+	public FileViewer(ReadOnlyTargetRules Target) : base(Target)
 	{
 		
 		PublicIncludePaths.AddRange(

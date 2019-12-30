@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "UI/DirTree.h"
 #include "FileViewer.h"
-#include "DirTree.h"
 #include "SFileView.h"
 
 #define LOCTEXT_NAMESPACE "FFileViewerModule"
@@ -35,7 +35,7 @@ FText UDirTree::Get_ParentPath() const
 TSharedRef<SWidget> UDirTree::RebuildWidget()
 {
 	MyFileView = SNew(SFileView).ListDbClicked(BIND_UOBJECT_DELEGATE(FDbClickDelegate, DirTreeDbClick));
-	MyFileView->Refresh_FileList(FPaths::GameDir());
+	MyFileView->Refresh_FileList(FPaths::ProjectDir());
 	return MyFileView.ToSharedRef();
 }
 

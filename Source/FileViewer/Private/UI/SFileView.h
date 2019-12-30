@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "EngineMinimal.h"
-#include "SCompoundWidget.h"
-#include "SListView.h"
+#include "Widgets/SCompoundWidget.h"
+#include "Widgets/Views/SListView.h"
 
 
 DECLARE_DELEGATE_OneParam(FDbClickDelegate, const FString&);
