@@ -9,7 +9,6 @@ public class FileViewer : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"FileViewer/Public"
 				// ... add public include paths required here ...
 			}
 			);
