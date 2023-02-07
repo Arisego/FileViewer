@@ -20,6 +20,16 @@ UDirTree::UDirTree(const FObjectInitializer& ObjectInitializer)
 	UE_LOG(LogFileViewer, Log, TEXT("[UDirTree] UDirTree(): Construct"));
 }
 
+void UDirTree::ReleaseSlateResources(bool bReleaseChildren)
+{
+    Super::ReleaseSlateResources(bReleaseChildren);
+
+	if (MyFileView.IsValid())
+	{
+		MyFileView.Reset();
+	}
+}
+
 void UDirTree::NavParent()
 {
 	if (!MyFileView.IsValid()) return;

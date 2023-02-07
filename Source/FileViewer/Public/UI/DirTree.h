@@ -20,6 +20,8 @@ public:
 	virtual const FText GetPaletteCategory() override;
 #endif
 
+
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "FileViewer")
 	 	void NavParent();
@@ -29,6 +31,8 @@ public:
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
+    void ReleaseSlateResources(bool bReleaseChildren) override;
+
 
 public:
 	UFUNCTION()
