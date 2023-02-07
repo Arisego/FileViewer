@@ -4,6 +4,12 @@
 #include "FileViewer.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsHWrapper.h"
+#endif
+
+#define _FAKE_ROOT_ "SYSTEM"
+
 
 
 class FileListVisitor : public IPlatformFile::FDirectoryVisitor
@@ -66,19 +72,70 @@ void SFileView::Refresh_FileList(const FString& InPath)
 		mstr_CurPath = FPaths::GetPath(InPath);
 	}
 
-	FPaths::MakeStandardFilename(mstr_CurPath);
-	UE_LOG(LogFileViewer, Log, TEXT("[SFileView] Refresh_FileList %s|%s"), *InPath, *mstr_CurPath);
-	marr_FileInofs.Empty();
+	if (mstr_CurPath.Equals(_FAKE_ROOT_))
+	{
 
-	IPlatformFile &PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	FileListVisitor tp_FileVisit(&marr_FileInofs);
-	PlatformFile.IterateDirectory(*mstr_CurPath, tp_FileVisit);
-	mv_FileList->RequestListRefresh();
+        UE_LOG(LogFileViewer, Log, TEXT("[SFileView] Refresh_FileList, fake root %s|%s"), *InPath, *mstr_CurPath);
+        marr_FileInofs.Empty();
+
+		/**
+		 * @ref: https://stackoverflow.com/questions/286534/enumerating-all-available-drive-letters-in-windows
+		 * GetLogicalDrives returns a list of available (read: used) drives as bits in a mask
+         * GetLogicalDriveStrings can get you just the list of currently used drive letters.
+		 * GetVolumeInformation can be used to get more information about a specific drive.
+		 */
+        int32 DrivesMask =
+#if PLATFORM_WINDOWS
+        (int32)GetLogicalDrives()
+#else
+            0
+#endif // PLATFORM_WINDOWS
+            ;
+
+        FMenuBuilder MenuBuilder(true, NULL);
+        const TCHAR* DriveLetters = TEXT("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        FString Drive = TEXT("A:");
+
+        for (int32 i = 0; i < 26; i++)
+        {
+            if (DrivesMask & 0x01)
+            {
+                Drive[0] = DriveLetters[i];
+				marr_FileInofs.Add(MakeShared<FFileInfo>(FFileInfo(Drive + TEXT("/"), true)));
+			}
+
+            DrivesMask >>= 1;
+        }
+
+		mv_FileList->RequestListRefresh();
+	}
+	else
+	{
+        FPaths::MakeStandardFilename(mstr_CurPath);
+        UE_LOG(LogFileViewer, Log, TEXT("[SFileView] Refresh_FileList %s|%s"), *InPath, *mstr_CurPath);
+        marr_FileInofs.Empty();
+
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        FileListVisitor tp_FileVisit(&marr_FileInofs);
+        PlatformFile.IterateDirectory(*mstr_CurPath, tp_FileVisit);
+        mv_FileList->RequestListRefresh();
+	}
+
+
 }
 
 void SFileView::Nav_Parent()
 {
-	if (FPaths::IsDrive(mstr_CurPath)) return;
+	if (mstr_CurPath.Equals(_FAKE_ROOT_))
+	{
+		return;
+	}
+
+	if (FPaths::IsDrive(mstr_CurPath))
+	{
+		Refresh_FileList(_FAKE_ROOT_);
+		return;
+	}
 
 	UE_LOG(LogTemp, Log, TEXT("[SFileView] Nav_Parent(): %s"), *mstr_CurPath);
 	Refresh_FileList(FPaths::GetPath(mstr_CurPath));
